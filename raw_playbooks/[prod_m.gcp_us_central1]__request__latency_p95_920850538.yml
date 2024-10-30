@@ -1,4 +1,4 @@
-# The name of the monitor policy. (eric_update_1)
+# The name of the monitor policy.
 monitorName: '[prod-m.gcp-us-central1] Request Latency p95'
 # A boolean flag to control if the playbook can be automatically updated. If true, new update would be directly pushed; otherwise, a PR would be opened instead.
 isProtected: false
