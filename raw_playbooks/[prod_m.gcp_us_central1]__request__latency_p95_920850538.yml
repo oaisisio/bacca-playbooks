@@ -3,7 +3,7 @@ monitorName: '[prod-m.gcp-us-central1] Request Latency p95'
 # A boolean flag to control if the playbook can be automatically updated. If true, new update would be directly pushed; otherwise, a PR would be opened instead.
 isProtected: true
 # Optional field to point to a parent playbook absolute path. If set, the final playbook would be the merge of both the parent and child playbook.
-parentPlaybook: null
+parentPlaybook: 'raw_playbooks/parent_playbook.yml'
 # A list of failure patterns, each contains the name/description/interpretation/investigationActions/mitigationActions.
 failurePatterns:
 - name: zone_performance_degradation_eric_update_3
