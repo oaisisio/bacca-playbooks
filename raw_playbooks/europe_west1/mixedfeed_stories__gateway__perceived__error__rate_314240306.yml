@@ -1,0 +1,124 @@
+# The name of the monitor policy.
+monitorName: europe-west1/mixedfeed_stories Gateway Perceived Error Rate
+# A boolean flag to control if the playbook can be automatically updated. If true, new update would be directly pushed; otherwise, a PR would be opened instead.
+isProtected: false
+# Optional field to point to a parent playbook absolute path. If set, the final playbook would be the merge of both the parent and child playbook.
+parentPlaybook: null
+# A list of failure patterns, each contains the name/description/interpretation/investigationActions/mitigationActions.
+failurePatterns:
+- name: mm_migration_node_scheduling_issue
+  description: |-
+    After Managed Mesh (MM) migration, the mixer experiences increased error rates and latency spikes due to pods being scheduled on underperforming n2d nodes instead of t2d nodes, as well as improper HPA (Horizontal Pod Autoscaler) thresholds.
+  evidenceInterpretation: |-
+    Mixer pods are running on n2d nodes, and adjusting HPA thresholds leads to reduction in error rates and latency spikes, confirming that the issue is due to node type and pod overloading.
+  investigationActions:
+  - name: check_node_types
+    description: |-
+      Verify if the mixer pods are scheduled on n2d nodes instead of the expected t2d nodes. Use the relevant dashboards to inspect node types and scheduling patterns.
+    urls:
+    - https://grafana-dashboard.sc-corp.net/d/mesh-per-instance-metrics/mesh-per-instance-metrics?var-service=df-spotlight&amp;var-cloud=gcp&amp;var-reg=us-central1&amp;var-cntr=mixer&amp;var-top=10&amp;var-cluster=mixed-feed-m&amp;orgId=1&amp;var-prefix=mesh-health-prod.aws.*.us-east-1.*&amp;var-stage=prod&amp;var-project=mesh-compute-prod-1&amp;var-owner=shared_cluster&amp;var-kube=shared--content-spotlight-2--prod&amp;var-ns=df-spotlight&amp;var-ptile=max&amp;var-zones=a,b,c,d,f&amp;from=1727875721069&amp;to=1727881546907
+    - https://snap.slack.com/archives/C03G29Y4CTD/p1727885069791599
+    - https://grafana-dashboard.sc-corp.net/d/mesh-per-instance-metrics/mesh-per-instance-metrics?var-service=df-spotlight&amp;var-cloud=gcp&amp;var-reg=us-central1&amp;var-cntr=mixer&amp;var-top=10&amp;var-cluster=mixed-feed-m&amp;orgId=1&amp;var-prefix=mesh-health-prod.aws.*.us-east-1.*&amp;var-stage=prod&amp;var-project=mesh-compute-prod-1&amp;var-owner=shared_cluster&amp;var-kube=shared--content-spotlight-2--prod&amp;var-ns=df-spotlight&amp;var-ptile=max&amp;var-zones=a,b,c,d,f&amp;from=now-7d&amp;to=now&amp;viewPanel=20&amp;editPanel=20
+  - name: check_hpa_thresholds
+    description: |-
+      Review the Horizontal Pod Autoscaler (HPA) thresholds to determine if pods are overloaded. Check if adjusting HPA thresholds can alleviate CPU overloading and reduce latency spikes.
+    urls:
+    - https://cloud.sc-corp.net/#/services/df-spotlight/workloads
+    - https://snap.slack.com/archives/C06L6NA1FPU/p1727861987353369?thread_ts=1727841966.317669&amp;cid=C06L6NA1FPU
+    - https://grafana-dashboard.sc-corp.net/d/m_df-spotlighttmIoHzM5TD/mesh-service-df-spotlight?orgId=1&amp;var-SwitchboardCluster=mixed-feed&amp;var-Stage=All&amp;var-Provider=gcp&amp;var-Region=europe-west1&amp;var-Project=context-prod&amp;var-Kube=All&amp;var-Zone=All&amp;var-Percentile=p99&amp;var-Namespace=All&amp;var-Container=All&amp;var-client_os=All&amp;var-Environment=prod&amp;var-Top=20&amp;from=now-12h&amp;to=now
+  mitigationActions:
+  - name: adjust_hpa_thresholds
+    description: |-
+      Lower the HPA target CPU utilization percentage to distribute the load more evenly across pods and prevent overloading.
+    urls:
+    - https://cloud.sc-corp.net/#/services/df-spotlight/workloads
+    - https://snap.slack.com/archives/C06L6NA1FPU/p1727861987353369?thread_ts=1727841966.317669&amp;cid=C06L6NA1FPU
+    - https://grafana-dashboard.sc-corp.net/d/m_df-spotlighttmIoHzM5TD/mesh-service-df-spotlight?orgId=1&amp;var-SwitchboardCluster=mixed-feed&amp;var-Stage=All&amp;var-Provider=gcp&amp;var-Region=europe-west1&amp;var-Project=context-prod&amp;var-Kube=All&amp;var-Zone=All&amp;var-Percentile=p99&amp;var-Namespace=All&amp;var-Container=All&amp;var-client_os=All&amp;var-Environment=prod&amp;var-Top=20&amp;from=now-12h&amp;to=now
+  - name: enforce_node_scheduling_policy
+    description: |-
+      Update node scheduling policies to ensure pods are scheduled on t2d nodes and prevent them from being scheduled on n2d nodes.
+    urls:
+    - https://grafana-dashboard.sc-corp.net/d/mesh-per-instance-metrics/mesh-per-instance-metrics?var-service=df-spotlight&amp;var-cloud=gcp&amp;var-reg=us-central1&amp;var-cntr=mixer&amp;var-top=10&amp;var-cluster=mixed-feed-m&amp;orgId=1&amp;var-prefix=mesh-health-prod.aws.*.us-east-1.*&amp;var-stage=prod&amp;var-project=mesh-compute-prod-1&amp;var-owner=shared_cluster&amp;var-kube=shared--content-spotlight-2--prod&amp;var-ns=df-spotlight&amp;var-ptile=max&amp;var-zones=a,b,c,d,f&amp;from=1727875721069&amp;to=1727881546907
+    - https://snap.slack.com/archives/C03G29Y4CTD/p1727885069791599
+- name: misconfigured_duplicate_alerts
+  description: |-
+    Alerts are misconfigured or duplicated, leading to confusion and alerts being routed to the wrong teams or firing unnecessarily.
+  evidenceInterpretation: |-
+    Duplicate alerts are identified in the alerting system, and alerts are being sent to incorrect teams or rotations.
+  investigationActions:
+  - name: verify_alert_configuration
+    description: |-
+      Check the alert rules and notification policies to identify any misconfigurations or duplicates. Ensure that alerts are properly set up and routed to the correct on-call rotation.
+    urls:
+    - https://portal.victorops.com/ui/snapchat/incident/653896/details
+    - https://github.sc-corp.net/Snapchat/search/pull/43558
+  mitigationActions:
+  - name: update_alert_configurations
+    description: |-
+      Remove duplicate alert rules and correct misconfigurations in the alerting system. Update notification policies to ensure proper routing of alerts.
+    urls:
+    - https://portal.victorops.com/ui/snapchat/incident/653896/details
+    - https://github.sc-corp.net/Snapchat/search/pull/43558
+- name: error_spikes_after_release
+  description: |-
+    After a release or hotfix, error rates increase due to issues in the release pipeline or sudden caching of features, causing temporary instability.
+  evidenceInterpretation: |-
+    Error rates increased immediately after a recent release or hotfix, and reviewing the release shows potential causes.
+  investigationActions:
+  - name: review_recent_releases
+    description: |-
+      Review recent releases or hotfixes for potential issues that could have caused the error spikes. Check deployment logs and change summaries for anomalies.
+    urls:
+    - https://portal.victorops.com/ui/snapchat/incident/653896/details
+  - name: examine_release_pipeline
+    description: |-
+      Investigate the release pipeline for potential issues, such as releasing too quickly or not properly handling caching of features.
+    urls: []
+  mitigationActions:
+  - name: rollback_release
+    description: |-
+      Roll back the recent release or hotfix to the previous stable version to mitigate the errors.
+    urls:
+    - https://portal.victorops.com/ui/snapchat/incident/653896/details
+  - name: adjust_release_pipeline
+    description: |-
+      Modify the release pipeline to address issues, such as slowing down release speed or implementing better caching mechanisms.
+    urls: []
+- name: upstream_service_latency
+  description: |-
+    Spikes in error rate and latency due to increased latency in upstream services, such as the Retrieval Service.
+  evidenceInterpretation: |-
+    Correlation between spikes in error rate and increased latency in upstream services is identified.
+  investigationActions:
+  - name: check_upstream_service_latency
+    description: |-
+      Investigate the health and latency of upstream services (e.g., the Retrieval Service). Examine logs and dashboards for latency spikes during the time of errors.
+    urls:
+    - https://grafana-dashboard.sc-corp.net/d/df-spotlight_snapc/df-spotlight?orgId=1&amp;var-Region=europe-west1&amp;var-SwitchboardCluster=mixed-feed-m&amp;var-MonitoringService=df-spotlight-mixed-feed-m&amp;var-K8SCluster=All&amp;from=1727705320325&amp;to=1727708865100&amp;viewPanel=57750948
+    - https://grafana-dashboard.sc-corp.net/explore?orgId=1&amp;left=%7B%22datasource%22:%22Graphite%20M3%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22target%22:%22asPercent(sumSeries(gw-prod.gcp.*.europe-west1.*.counters.envoy.vhost.*.vcluster.endpoint-df-spotlight__df-spotlight-prodmixed_feedstories.upstream_rq_5xx),%20sumSeries(gw-prod.gcp.*.europe-west1.*.counters.envoy.vhost.*.vcluster.endpoint-df-spotlight__df-spotlight-prodmixed_feedstories.upstream_rq_completed))%22,%22textEditor%22:true,%22refCount%22:0%7D,%7B%22refId%22:%22B%22,%22target%22:%22alias(constantLine(0.5),%27threshold%27)%22,%22textEditor%22:true,%22refCount%22:0%7D%5D,%22range%22:%7B%22from%22:%221727703004304%22,%22to%22:%221727713762952%22%7D%7D
+    - https://grafana-dashboard.sc-corp.net/d/df-spotlight_snapc/df-spotlight?orgId=1&amp;var-Region=europe-west1&amp;var-SwitchboardCluster=mixed-feed-m&amp;var-MonitoringService=df-spotlight-mixed-feed-m&amp;var-K8SCluster=All&amp;from=1727702910432&amp;to=1727713609947&amp;viewPanel=57750948
+  mitigationActions:
+  - name: notify_upstream_service_team
+    description: |-
+      Inform the upstream service team about the latency issues and collaborate on resolving them.
+    urls: []
+- name: envoy_sidecar_connectivity_issues
+  description: |-
+    Envoy sidecar experiences issues connecting to the control plane, causing restarts and downstream API failures.
+  evidenceInterpretation: |-
+    Envoy sidecar logs show errors connecting to the control plane, correlating with restarts and API failures.
+  investigationActions:
+  - name: check_envoy_logs_for_errors
+    description: |-
+      Examine the Envoy sidecar logs for connectivity errors with the control plane. Look for patterns indicating communication breakdowns.
+    urls:
+    - https://snap.slack.com/archives/C01R8J844JH/p1729792444313579
+  mitigationActions:
+  - name: restart_envoy_sidecars
+    description: |-
+      Restart the Envoy sidecars or the affected pods to re-establish connections with the control plane.
+    urls: []
+  - name: investigate_control_plane_availability
+    description: |-
+      Check the health and availability of the Envoy control plane to ensure it is functioning properly.
+    urls: []
