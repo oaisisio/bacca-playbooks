@@ -6,7 +6,7 @@ isProtected: true
 parentPlaybook: null
 # A list of failure patterns, each contains the name/description/interpretation/investigationActions/mitigationActions.
 failurePatterns:
-- name: zone_performance_degradation_eric_update_3
+- name: zone_performance_degradation_eric_update_5
   description: |-
     Performance degradation in specific zones leading to elevated latency, often due to hardware differences or configuration changes affecting zone affinity.
   evidenceInterpretation: |-
