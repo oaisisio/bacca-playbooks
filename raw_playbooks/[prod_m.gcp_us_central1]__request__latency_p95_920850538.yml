@@ -5,4 +5,43 @@ isProtected: true
 # Optional field to point to a parent playbook absolute path. If set, the final playbook would be the merge of both the parent and child playbook.
 parentPlaybook: raw_playbooks/parent_playbook.yml
 # A list of failure patterns, each contains the name/description/interpretation/investigationActions/mitigationActions.
-failurePatterns: []
+failurePatterns:
+- name: zone_performance_degradation_eric_update_1
+  description: |-
+    Performance degradation in specific zones leading to elevated latency, often due to hardware differences or configuration changes affecting zone affinity.
+  evidenceInterpretation: |-
+    Identify zones with degraded performance compared to others, especially after configuration changes affecting zone affinity or hardware variations.
+  investigationActions:
+  - name: check_pending_nodes
+    description: |-
+      Check for any pending nodes that may be unable to handle requests, leading to latency issues.
+    urls: []
+  - name: verify_dashboard_metrics
+    description: |-
+      Verify the relevant metrics on the dashboard to assess system performance. If the dashboard is broken, locate the updated dashboard or request a fix.
+    urls:
+    - https://grafana-dashboard.sc-corp.net/d/dId7LlU4k/discover-feed-retrieval-service?orgId=1&amp;var-MixerCluster=jaguar-us-central1-prod&amp;var-RootGroup=rs_df_root_usc&amp;var-RootCluster=shared--content-infra--prod&amp;var-LeafGroup=rs_df_leaf_usc&amp;var-LeafCluster=df-rs-df-leaves-prod--docs--prod&amp;var-LeafService=rs-df-leaf&amp;var-LeafService=rs-df-docs-dynamic&amp;var-Region=us-central1&amp;var-ExplorationLeaf=df-rs-df-leaves-prod--explore--prod&amp;var-ExplorationLeafGroup=gke-df-rs-df-leaves-prod---df-explore-.*&amp;var-Zone=All&amp;var-ExploreCluster=df-rs-df-leaves-prod--explore--prod&amp;var-ExploreGroup=rs_df_explore_usc&amp;var-AlignPeriod=10m&amp;from=now-3h&amp;from=now-3h&amp;to=now&amp;to=now
+    - https://grafana-dashboard.sc-corp.net/d/df-rs-df-root_snapc/discover-retrieval-root?orgId=1&amp;refresh=1m
+  - name: check_zone_performance
+    description: |-
+      Check performance metrics across different zones to identify any disparities in performance.
+    urls:
+    - https://grafana-dashboard.sc-corp.net/d/m_df-rs-df-roottmIoHzM5TD/mesh-service-df-rs-df-root?var-Provider=gcp&amp;var-Region=us-central1&amp;var-SwitchboardCluster=prod-m&amp;orgId=1&amp;refresh=1m&amp;viewPanel=89470879&amp;var-Stage=All&amp;var-Project=All&amp;var-Kube=All&amp;var-Zone=All&amp;var-Percentile=p99&amp;var-Namespace=All&amp;var-Container=All&amp;var-client_os=All&amp;var-Environment=prod&amp;var-Top=20&amp;var-PRDSPlatform=All&amp;var-PRDSPlugin=All&amp;var-PRDSType=All&amp;var-PRDSVersion=All
+    - https://cloud.sc-corp.net/#/services/df-rs-df-root/workloads
+  - name: review_hpa_settings
+    description: |-
+      Review and adjust HPA settings to ensure appropriate scaling and resource allocation.
+    urls: []
+  mitigationActions:
+  - name: adjust_hpa_min_replicas
+    description: |-
+      Adjust the minimum number of replicas in the HPA settings to increase capacity and reduce latency.
+    urls: []
+  - name: restore_zone_affinity
+    description: |-
+      Re-enable zone affinity if disabling it has caused performance issues across zones.
+    urls: []
+  - name: redistribute_load_across_zones
+    description: |-
+      Rebalance the traffic or resources to underutilized zones to alleviate stress on underperforming zones.
+    urls: []
